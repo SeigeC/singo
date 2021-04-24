@@ -1,9 +1,11 @@
 package service
 
 import (
+	"github.com/jinzhu/gorm"
 	"singo/model"
 	"singo/serializer"
-
+	"singo/serializer/handler"
+	
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -23,19 +25,22 @@ func (service *UserLoginService) setSession(c *gin.Context, user model.User) {
 }
 
 // Login 用户登录函数
-func (service *UserLoginService) Login(c *gin.Context) serializer.Response {
+func (service *UserLoginService) Login(c *gin.Context) (handler.ActionResponse, error) {
 	var user model.User
-
+	
 	if err := model.DB.Where("user_name = ?", service.UserName).First(&user).Error; err != nil {
-		return serializer.ParamErr("账号或密码错误", nil)
+		if err != gorm.ErrRecordNotFound {
+			return nil, serializer.ErrDatabase.New(err)
+		}
+		return nil, serializer.ErrParamsMsg("账号或密码错误")
 	}
-
+	
 	if user.CheckPassword(service.Password) == false {
-		return serializer.ParamErr("账号或密码错误", nil)
+		return nil, serializer.ErrParamsMsg("账号或密码错误")
 	}
-
+	
 	// 设置session
 	service.setSession(c, user)
-
-	return serializer.BuildUserResponse(user)
+	
+	return user, nil
 }

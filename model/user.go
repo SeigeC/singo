@@ -1,18 +1,19 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // User 用户模型
 type User struct {
-	gorm.Model
-	UserName       string
+	ID        int64  `json:"id"`
+	UserName  string `json:"user_name"`
+	Nickname  string `json:"nickname"`
+	Status    string `json:"status"`
+	Avatar    string `gorm:"size:1000" json:"avatar"`
+	CreatedAt int64  `json:"created_at"`
+	
 	PasswordDigest string
-	Nickname       string
-	Status         string
-	Avatar         string `gorm:"size:1000"`
 }
 
 const (

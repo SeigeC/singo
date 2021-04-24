@@ -1,20 +1,8 @@
 package serializer
 
-import "github.com/gin-gonic/gin"
-
-// Response 基础序列化器
-type Response struct {
-	Code  int         `json:"code"`
-	Data  interface{} `json:"data,omitempty"`
-	Msg   string      `json:"msg"`
-	Error string      `json:"error,omitempty"`
-}
-
-// TrackedErrorResponse 有追踪信息的错误响应
-type TrackedErrorResponse struct {
-	Response
-	TrackID string `json:"track_id"`
-}
+import (
+	"singo/serializer/handler"
+)
 
 // 三位数错误编码为复用http原本含义
 // 五位数错误编码为应用自定义错误
@@ -35,39 +23,20 @@ const (
 	CodeParamErr = 40001
 )
 
+var (
+	ErrDatabase = handler.NewActionError(500, 100010002, "数据库错误")
+	ErrParams   = handler.NewActionError(400, 501010000, "参数错误")
+)
+
+// ErrParamsMsg ErrParams with extra message
+func ErrParamsMsg(msg string) error {
+	return handler.NewActionError(ErrParams.Status, ErrParams.Code, msg)
+}
+
 // CheckLogin 检查登录
-func CheckLogin() Response {
-	return Response{
+func CheckLogin() handler.Response {
+	return handler.Response{
 		Code: CodeCheckLogin,
 		Msg:  "未登录",
 	}
-}
-
-// Err 通用错误处理
-func Err(errCode int, msg string, err error) Response {
-	res := Response{
-		Code: errCode,
-		Msg:  msg,
-	}
-	// 生产环境隐藏底层报错
-	if err != nil && gin.Mode() != gin.ReleaseMode {
-		res.Error = err.Error()
-	}
-	return res
-}
-
-// DBErr 数据库操作失败
-func DBErr(msg string, err error) Response {
-	if msg == "" {
-		msg = "数据库操作失败"
-	}
-	return Err(CodeDBError, msg, err)
-}
-
-// ParamErr 各种参数错误
-func ParamErr(msg string, err error) Response {
-	if msg == "" {
-		msg = "参数错误"
-	}
-	return Err(CodeParamErr, msg, err)
 }

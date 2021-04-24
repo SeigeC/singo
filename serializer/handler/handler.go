@@ -2,8 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"os"
-	"singo/middleware"
 )
 
 // Method HTTP method
@@ -20,9 +18,6 @@ const (
 	ContentTypeJSON           = "application/json"
 	ContentTypeFormUrlencoded = "application/x-www-form-urlencoded"
 )
-
-
-
 
 // M for map
 type M map[string]interface{}
@@ -45,56 +40,46 @@ type Handler struct {
 }
 
 func NewHandler(str string) Handler {
-	h := Handler{
-		Name: str,
-		Middlewares: gin.HandlersChain{
-			middleware.Session(os.Getenv("SESSION_SECRET")),
-			middleware.Cors(),
-			middleware.CurrentUser(),
-		},
-		
-	}
-	return h
+	return Handler{Name: str}
 }
 
 func (h *Handler) Use(middleware ...gin.HandlerFunc) {
-	h.Middlewares = append(h.Middlewares,middleware...)
+	h.Middlewares = append(h.Middlewares, middleware...)
 }
 
-func (h *Handler) pushAction(method Method,relativePath string,f ActionFunc,login bool) {
-	if _,ok:= h.Actions[relativePath];ok {
-		panic( "Handler 已存在 " + relativePath)
+func (h *Handler) pushAction(method Method, relativePath string, f ActionFunc, login bool) {
+	if _, ok := h.Actions[relativePath]; ok {
+		panic("Handler 已存在 " + relativePath)
 	}
-	h.Actions[relativePath] = NewAction(method,f,login)
+	h.Actions[relativePath] = NewAction(method, f, login)
 }
-
 
 // POST append a post func to actions
-func (h *Handler) POST(relativePath string,f ActionFunc) {
-	h.pushAction(POST,relativePath,f,false)
+func (h *Handler) POST(relativePath string, f ActionFunc) {
+	h.pushAction(POST, relativePath, f, false)
 }
 
 // POST append a need login post func to actions
-func (h *Handler) LoginPOST(relativePath string,f ActionFunc) {
-	h.pushAction(POST,relativePath,f,true)
+func (h *Handler) LoginPOST(relativePath string, f ActionFunc) {
+	h.pushAction(POST, relativePath, f, true)
 }
 
 // GET append a get func to actions
-func (h *Handler) GET(relativePath string,f ActionFunc) {
-	h.pushAction(GET,relativePath,f,false)
+func (h *Handler) GET(relativePath string, f ActionFunc) {
+	h.pushAction(GET, relativePath, f, false)
 }
+
 // GET append a get func to actions
-func (h *Handler) LoginGet(relativePath string,f ActionFunc) {
-	h.pushAction(GET,relativePath,f,true)
+func (h *Handler) LoginGet(relativePath string, f ActionFunc) {
+	h.pushAction(GET, relativePath, f, true)
 }
 
 // Handler create a new handler
-func (h *Handler)Handler(str string) *Handler {
-	handler:= &Handler{Name:str}
-	h.SubHandlers = append(h.SubHandlers,handler)
+func (h *Handler) Handler(str string) *Handler {
+	handler := &Handler{Name: str}
+	h.SubHandlers = append(h.SubHandlers, handler)
 	return handler
 }
-
 
 // Mount mount handler
 func (h *Handler) Mount(r *gin.Engine) {
