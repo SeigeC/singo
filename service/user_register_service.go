@@ -20,7 +20,7 @@ func (service *UserRegisterService) valid() error {
 		return serializer.ErrParamsMsg("两次输入的密码不相同")
 	}
 	
-	count := 0
+	var count int64
 	model.DB.Model(&model.User{}).Where("nickname = ?", service.Nickname).Count(&count)
 	if count > 0 {
 		return serializer.ErrParamsMsg("昵称被占用")
