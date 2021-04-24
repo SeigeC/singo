@@ -6,17 +6,15 @@ import (
 	"singo/conf"
 	"singo/model"
 	"singo/serializer"
-
+	"singo/serializer/handler"
+	
 	"github.com/gin-gonic/gin"
 	validator "gopkg.in/go-playground/validator.v8"
 )
 
 // Ping 状态检查页面
-func Ping(c *gin.Context) {
-	c.JSON(200, serializer.Response{
-		Code: 0,
-		Msg:  "Pong",
-	})
+func Ping(c *handler.Context) (handler.ActionResponse, error) {
+	return "Pong",nil
 }
 
 // CurrentUser 获取当前用户

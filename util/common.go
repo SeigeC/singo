@@ -2,6 +2,8 @@ package util
 
 import (
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -15,4 +17,22 @@ func RandStringRunes(n int) string {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
+}
+
+// SplitToInt64Array split str with sep, return int64 array
+func SplitToInt64Array(s, sep string) ([]int64, error) {
+	if s == "" {
+		return []int64{}, nil
+	}
+	
+	splitList := strings.Split(s, sep)
+	result := make([]int64, len(splitList))
+	for i, v := range splitList {
+		id, err := strconv.ParseInt(strings.TrimSpace(v), 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = id
+	}
+	return result, nil
 }

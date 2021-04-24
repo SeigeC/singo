@@ -9,8 +9,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var Config struct{
+	Port string
+}
+
 // Init 初始化配置项
-func Init() {
+func Init()  {
 	// 从本地读取环境变量
 	godotenv.Load()
 
@@ -25,4 +29,6 @@ func Init() {
 	// 连接数据库
 	model.Database(os.Getenv("MYSQL_DSN"))
 	cache.Redis()
+	
+	Config.Port = os.Getenv("SERVICE_PORT")
 }
