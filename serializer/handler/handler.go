@@ -62,7 +62,7 @@ func (h *Handler) POST(relativePath string, f ActionFunc) {
 	h.pushAction(POST, relativePath, f, false)
 }
 
-// POST append a need login post func to actions
+// LoginPOST append a need login post func to actions
 func (h *Handler) LoginPOST(relativePath string, f ActionFunc) {
 	h.pushAction(POST, relativePath, f, true)
 }
@@ -72,7 +72,7 @@ func (h *Handler) GET(relativePath string, f ActionFunc) {
 	h.pushAction(GET, relativePath, f, false)
 }
 
-// GET append a get func to actions
+// LoginGet append a get func to actions
 func (h *Handler) LoginGet(relativePath string, f ActionFunc) {
 	h.pushAction(GET, relativePath, f, true)
 }
