@@ -48,7 +48,7 @@ func (h *Handler) Use(middleware ...gin.HandlerFunc) {
 }
 
 func (h *Handler) pushAction(method Method, relativePath string, f ActionFunc, login bool) {
-	if h.Actions == nil{
+	if h.Actions == nil {
 		h.Actions = make(map[string]*Action)
 	}
 	if _, ok := h.Actions[relativePath]; ok {
