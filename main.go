@@ -11,5 +11,5 @@ func main() {
 
 	// 装载路由
 	r := server.NewRouter()
-	r.Run(conf.Config.Port)
+	r.Run(":" + conf.Config.Port)
 }
