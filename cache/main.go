@@ -1,15 +1,23 @@
 package cache
 
 import (
+	"context"
 	"os"
 	"singo/util"
 	"strconv"
+	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
+type Client redis.Client
+
+func (c Client) Context() (context.Context, func()) {
+	return context.WithTimeout(context.Background(), 10*time.Second)
+}
+
 // RedisClient Redis缓存客户端单例
-var RedisClient *redis.Client
+var RedisClient *Client
 
 // Redis 在中间件中初始化redis链接
 func Redis() {
@@ -21,11 +29,13 @@ func Redis() {
 		MaxRetries: 1,
 	})
 
-	_, err := client.Ping().Result()
+	ctx, cancel := RedisClient.Context()
+	defer cancel()
 
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
 		util.Log().Panic("连接Redis不成功", err)
 	}
 
-	RedisClient = client
+	RedisClient = (*Client)(client)
 }
